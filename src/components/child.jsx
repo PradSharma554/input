@@ -5,6 +5,13 @@ const boxStyle = {
   padding: '10px',
   marginBottom: '10px',
   borderRadius: '10px',
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+};
+
+const contentStyle = {
+  flex: 1,
 };
 
 const inputStyle = {
@@ -31,6 +38,13 @@ const errorTextStyle = {
 const hiddenErrorStyle = {
   ...errorTextStyle,
   visibility: 'hidden',
+};
+
+const deleteIconStyle = {
+  cursor: 'pointer',
+  marginLeft: '10px',
+  userSelect: 'none',
+  fontSize: '16px',
 };
 
 const Child = ({ inputs, setInputs }) => {
@@ -60,7 +74,13 @@ const Child = ({ inputs, setInputs }) => {
       index === inputs.length - 1 &&
       value.length === 1
     ) {
-      updated.push({ input: '', role: 'Role 1', showRole: false, error: '', touched: false });
+      updated.push({
+        input: '',
+        role: 'Role 1',
+        showRole: false,
+        error: '',
+        touched: false,
+      });
     }
 
     setInputs(updated);
@@ -88,39 +108,63 @@ const Child = ({ inputs, setInputs }) => {
     setInputs(updated);
   };
 
+  const handleDelete = (index) => {
+    if (inputs.length <= 2) return;
+    const updated = [...inputs];
+    updated.splice(index, 1);
+    setInputs(updated);
+  };
+
   return (
     <>
       {inputs.map((item, index) => (
         <div key={index} style={boxStyle}>
-          <input
-            type="text"
-            placeholder="Type your email"
-            value={item.input}
-            style={inputStyle}
-            onChange={(e) => handleChange(index, 'input', e.target.value)}
-            onBlur={() => handleBlur(index)}
-            onFocus={(e) => {
-              if (!item.showRole && e.target.value.length > 0) {
-                handleChange(index, 'input', e.target.value);
-              }
-            }}
-          />
-          {item.showRole && (
-            <select
-              value={item.role}
-              onChange={(e) => handleChange(index, 'role', e.target.value)}
-              style={selectStyle}
-            >
-              <option>Role 1</option>
-              <option>Role 2</option>
-              <option>Role 3</option>
-            </select>
-          )}
-          <div style={errorWrapperStyle}>
-            <div style={item.showRole && item.touched && item.error ? errorTextStyle : hiddenErrorStyle}>
-              {item.error || 'placeholder'}
+          <div style={contentStyle}>
+            <input
+              type="text"
+              placeholder="Type your email"
+              value={item.input}
+              style={inputStyle}
+              onChange={(e) => handleChange(index, 'input', e.target.value)}
+              onBlur={() => handleBlur(index)}
+              onFocus={(e) => {
+                if (!item.showRole && e.target.value.length > 0) {
+                  handleChange(index, 'input', e.target.value);
+                }
+              }}
+            />
+            {item.showRole && (
+              <select
+                value={item.role}
+                onChange={(e) => handleChange(index, 'role', e.target.value)}
+                style={selectStyle}
+              >
+                <option>Role 1</option>
+                <option>Role 2</option>
+                <option>Role 3</option>
+              </select>
+            )}
+            <div style={errorWrapperStyle}>
+              <div
+                style={
+                  item.showRole && item.touched && item.error
+                    ? errorTextStyle
+                    : hiddenErrorStyle
+                }
+              >
+                {item.error || 'placeholder'}
+              </div>
             </div>
           </div>
+          {inputs.length > 2 && item.showRole && (
+            <div
+              style={deleteIconStyle}
+              onClick={() => handleDelete(index)}
+              title="Delete"
+            >
+              🗑️
+            </div>
+          )}
         </div>
       ))}
     </>
